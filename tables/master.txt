@@ -1,0 +1,1 @@
+SMT_SJ_NA   47cfc1ef624ea3a43f1aa0a49d551d1a    tables_list.txt
