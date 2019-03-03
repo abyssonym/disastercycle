@@ -51,15 +51,19 @@ class NakamaParent(TableObject):
     def dsource_skills(self):
         if self.dsource is None:
             return []
-        return self.dsource.skills
+        return self.dsource.old_data['skills']
+
+    @cached_property
+    def is_compendium_demon(self):
+        return any(self.dsource_skills)
 
     @cached_property
     def kinship_rankings(self):
         sorted_nakama = sorted(NakamaObject.every,
                                key=lambda n: self.get_kinship(n),
                                reverse=True)
-        if any(self.dsource_skills):
-            sorted_nakama = [n for n in sorted_nakama if any(n.dsource_skills)]
+        if self.is_compendium_demon:
+            sorted_nakama = [n for n in sorted_nakama if n.is_compendium_demon]
         return sorted_nakama
 
     @classmethod
@@ -296,6 +300,33 @@ class NakamaObject(NakamaParent):
     @property
     def name(self):
         return ''
+
+    @classmethod
+    def full_preclean(cls):
+        races = sorted(set(n.race for n in NakamaObject))
+        for r in races:
+            nakamas = [n for n in NakamaObject.ranked
+                       if n.is_compendium_demon and n.race == r]
+            while True:
+                nakamas = sorted(
+                    nakamas, key=lambda n: n.lv)
+                for n1, n2 in zip(nakamas, nakamas[1:]):
+                    n1.lv = max(1, min(99, n1.lv))
+                    n2.lv = max(1, min(99, n2.lv))
+                    assert n2.lv >= n1.lv
+                    if n1.lv == n2.lv == 99:
+                        n1.lv = mutate_normal(
+                            98, 1, maximum=98,
+                            random_degree=n1.random_degree**2, wide=True)
+                        break
+                    if n1.lv == n2.lv:
+                        n2.lv = mutate_normal(
+                            n2.lv+1, minimum=n2.lv+1, maximum=99,
+                            random_degree=n2.random_degree**2, wide=True)
+                        break
+                else:
+                    break
+        super(NakamaObject, cls).full_preclean()
 
     def cleanup(self):
         assert hasattr(EnemyObject, 'precleaned') and EnemyObject.precleaned

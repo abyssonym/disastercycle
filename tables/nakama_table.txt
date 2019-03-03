@@ -1,7 +1,7 @@
 # Herald Seraph - 23a9494
 # size: 100 bytes
 nakama_index,2
-race,1,list
+race,1
 lv,1
 alignment_ld,1
 alignment_lc,1
