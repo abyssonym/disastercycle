@@ -1,0 +1,491 @@
+000 --------
+001 Seraph
+002 Metatron
+003 Sraosha
+004 Azrael
+005 Israfel
+006 Victor
+007 Aniel
+008 Kazfiel
+009 Amaterasu
+00A Laksmi
+00B Norn
+00C Tlazolteotl
+00D Pallas Athena
+00E Scathach
+00F Parvati
+010 Fortuna
+011 Hathor
+012 Ishtar
+013 Dummy
+014 Garuda
+015 Yatagarasu
+016 Feng Huang
+017 Thunderbird
+018 Phoenix
+019 Suparna
+01A Hamsa
+01B Dummy
+01C Dummy
+01D Yggdrasil
+01E Haoma
+01F Kukunochi
+020 Mayahuel
+021 Daphne
+022 Dummy
+023 Dummy
+024 Cherub
+025 Throne
+026 Dominion
+027 Virtue
+028 Power
+029 Principality
+02A Archangel
+02B Angel
+02C Dummy
+02D Dummy
+02E Da Peng
+02F Rukh
+030 Tangata Manu
+031 Caladrius
+032 Gu Huo Niao
+033 Harpy
+034 Toufei
+035 Dummy
+036 Dummy
+037 Ganesha
+038 Xiuhtecuhtli
+039 Valkyrie
+03A Shiwanna
+03B Dis
+03C Karasu Tengu
+03D Vodyanik
+03E Koppa Tengu
+03F Dummy
+040 Dummy
+041 Peri
+042 Sarasvati
+043 Senri
+044 Ame no Uzume
+045 Apsaras
+046 Dummy
+047 Demiurge
+048 Seth
+049 Samael
+04A Pales
+04B Taotie
+04C Pachacamac
+04D Mishaguji
+04E Baphomet
+04F Alciel
+050 Dummy
+051 Hresvelgr
+052 Huoniao
+053 Anzu
+054 Gurr
+055 Zhen
+056 Camazotz
+057 Moh Shuvuu
+058 Itsumade
+059 Onmoraki
+05A Dummy
+05B Dummy
+05C Erlkonig
+05D Alraune
+05E Zaccoum
+05F Skogsra
+060 Mandrake
+061 Shan Xiao
+062 Dummy
+063 Dummy
+064 Vishnu
+065 Hachiman
+066 Odin
+067 Omoteotl
+068 Prometheus
+069 Inti
+06A Thoth
+06B Dummy
+06C Dummy
+06D Barong
+06E Anubis
+06F Chimera
+070 Kaiming Shou
+071 Makami
+072 Kamapua'a
+073 Shiisaa
+074 Dummy
+075 Dummy
+076 Sphinx
+077 Sleipnir
+078 Baihu
+079 Airavata
+07A Qing Niuguai
+07B Pabilsag
+07C Apis
+07D Heqet
+07E Dummy
+07F Dummy
+080 Heimdall
+081 Hanuman
+082 Cu Chulainn
+083 Kurama Tengu
+084 Tlaloc
+085 Frost Ace
+086 Tam Lin
+087 Kresnik
+088 Demonee-ho
+089 Titania
+08A Oberon
+08B Vivian
+08C Spriggan
+08D Silky
+08E Pyro Jack
+08F High Pixie
+090 Jack Frost
+091 Goblin
+092 Pixie
+093 Lorelei
+094 Dummy
+095 Cerberus
+096 Ammut
+097 Gryphon
+098 Orthrus
+099 Hsing-Hsing
+09A Nekomata
+09B Inugami
+09C Katakirauwa
+09D Kaso
+09E Dummy
+09F Dummy
+0A0 Gogmagog
+0A1 Tlaltecuhtli
+0A2 Titan
+0A3 Kwancha
+0A4 Sudama
+0A5 Dwarf
+0A6 Hua Po
+0A7 Knocker
+0A8 Dummy
+0A9 Dummy
+0AA Ananta
+0AB Orochi
+0AC Gui Xian
+0AD Yurlungur
+0AE Vouivre
+0AF Nozuchi
+0B0 Naga
+0B1 Dummy
+0B2 Dummy
+0B3 Mot
+0B4 Nergal
+0B5 Guedhe
+0B6 Persephone
+0B7 Hel
+0B8 Dummy
+0B9 Dummy
+0BA Fenrir
+0BB Cabracan
+0BC Catoblepas
+0BD Manticore
+0BE Pellaidh
+0BF Nue
+0C0 Raiju
+0C1 Jueyuan
+0C2 Dummy
+0C3 Dummy
+0C4 Hecatoncheir
+0C5 Girimehkala
+0C6 Grendel
+0C7 Black Frost
+0C8 Rakshasa
+0C9 Wendigo
+0CA Ippon-Datara
+0CB Gremlin
+0CC Dummy
+0CD Dummy
+0CE Arachne
+0CF Mothman
+0D0 Myrmecolion
+0D1 Okiku-Mushi
+0D2 Ubu
+0D3 Dummy
+0D4 Dummy
+0D5 Shiva
+0D6 Susano-O
+0D7 Kartikeya
+0D8 Wu Kong
+0D9 Tonatiuh
+0DA Ares
+0DB Dummy
+0DC Dummy
+0DD Xi Wangmu
+0DE Skadi
+0DF Black Maria
+0E0 Diana
+0E1 Hariti
+0E2 Sedna
+0E3 Dzelarhons
+0E4 Pele
+0E5 Dummy
+0E6 Dummy
+0E7 Huang Long
+0E8 Quetzalcoatl
+0E9 Zhu Yin
+0EA Long
+0EB Gucumatz
+0EC Patrimpas
+0ED Makara
+0EE Dummy
+0EF Dummy
+0F0 Thor
+0F1 Bishamonten
+0F2 Jikokuten
+0F3 Koumokuten
+0F4 Zouchouten
+0F5 Takeminakata
+0F6 Dummy
+0F7 Dummy
+0F8 Gemori
+0F9 Decarabia
+0FA Ose
+0FB Dantalian
+0FC Orias
+0FD Halphas
+0FE Bifrons
+0FF Melchom
+100 Dummy
+101 Dummy
+102 Ongyo-Ki
+103 Berserker
+104 Fuu-Ki
+105 Sui-Ki
+106 Kin-Ki
+107 Momunofu
+108 Yamawaro
+109 Azumi
+10A Oni
+10B Dummy
+10C Dummy
+10D Rangda
+10E Dakini
+10F Atropos
+110 Lachesis
+111 Clotho
+112 Yuki Jyorou
+113 Leanan Sidhe
+114 Acheri
+115 Dummy
+116 Dummy
+117 Lilith
+118 Wild Hunt
+119 Succubus
+11A Kaiwan
+11B Incubus
+11C Fomorian
+11D Lilim
+11E Sandman
+11F Dummy
+120 Dummy
+121 Mara
+122 Surt
+123 Tzitzimitl
+124 Abaddon
+125 King Frost
+126 Loki
+127 Balor
+128 Dummy
+129 Dummy
+12A Fafnir
+12B Nidhoggr
+12C Mushussu
+12D Kingu
+12E Basilisk
+12F Bai Suzhen
+130 Zhu Tun She
+131 Dummy
+132 Dummy
+133 Legion
+134 Pisaca
+135 Macabre
+136 Inferno
+137 Dybbuk
+138 Poltergeist
+139 Dummy
+13A Dummy
+13B Doppelganger
+13C Slime
+13D Dummy
+13E Dummy
+13F Vetala
+140 Kudlak
+141 Strigoii
+142 Ghoul
+143 Churel
+144 Mou-Ryo
+145 Preta
+146 Bagaboo
+147 Bogaboo
+148 Saki Mitama
+149 Kusi Mitama
+14A Nigi Mitama
+14B Ara Mitama
+14C Bugaboo
+14D Demonica-L
+14E Salamander
+14F Undine
+150 Sylph
+151 Gnome
+152 Flaemis
+153 Aquans
+154 Aeros
+155 Erthys
+156 Demonica-N
+157 Demonica-C
+158 Mother Harlot
+159 Trumpeter
+15A Pale Rider
+15B Black Rider
+15C Red Rider
+15D White Rider
+15E Alice
+15F Matador
+160 David
+161 Dummy
+162 Dummy
+163 Kangiten
+164 Kama
+165 Kinmamon
+166 Futotama
+167 Kanbari
+168 Dummy
+169 Dummy
+16A Hare of Inaba
+16B Kuda
+16C Chupacabra
+16D Mamedanuki
+16E Dummy
+16F Dummy
+170 Masakado
+171 Tezcatlipoca
+172 Attis
+173 Aramisaki
+174 Dionysus
+175 Ogun
+176 Dummy
+177 Alilat
+178 Wu Kong
+179 Yatagarasu
+17A Zhu Yin
+17B Cherub
+17C Matador
+17D Unknown
+17E Unknown
+17F Unknown
+180 Unknown
+181 Unknown
+182 Pisaca
+183 Dummy
+184 Morax
+185 Mitra
+186 Horkos
+187 Asura
+188 Ouroboros
+189 Moloch
+18A Mithras
+18B Orcus
+18C Asherah
+18D Tiamat
+18E Maya
+18F Mastema
+190 Morax
+191 Mitra
+192 Horkos
+193 Asura
+194 Ouroboros
+195 Ouroboros
+196 Moloch
+197 Mithras
+198 Orcus
+199 Asherah
+19A Tiamat
+19B Maya
+19C Gore
+19D Mastema
+19E Zelenin
+19F Zelenin
+1A0 Jimenez
+1A1 Mem Aleph
+1A2 Gore
+1A3 Jimenez
+1A4 Jimenez
+1A5 Mem Aleph
+1A6 Bifrons
+1A7 Naga
+1A8 Azumi
+1A9 Lilim
+1AA Katakirauwa
+1AB Katakirauwa
+1AC Nue
+1AD Ghoul
+1AE Mastema
+1AF Unknown
+1B0 Onmoraki
+1B1 Knocker
+1B2 Dummy
+1B3 Orias
+1B4 Orias
+1B5 Oni
+1B6 Melchom
+1B7 Kaso
+1B8 Pixie
+1B9 Norris
+1BA Fomorian
+1BB Macabre
+1BC Oni
+1BD Jimenez
+1BE Gore
+1BF Formless
+1C0 Formless
+1C1 Formless
+1C2 Formless
+1C3 Formless
+1C4 Mandrake
+1C5 Kwancha
+1C6 Dzelarhons
+1C7 Basilisk
+1C8 Strange Demon
+1C9 Soldier
+1CA Sergeant
+1CB Jack
+1CC Grendel
+1CD Ryan
+1CE Israfel
+1CF Surt
+1D0 Skadi
+1D1 McClane
+1D2 Lorelei
+1D3 Mamedanuki
+1D4 Kanbari
+1D5 David
+1D6 Yggdrasil
+1D7 Yggdrasil
+1D8 Alice
+1D9 Mother Harlot
+1DA Aniel
+1DB Kazfiel
+1DC Aniel
+1DD Kazfiel
+1DE Zouchouten
+1DF Koumokuten
+1E0 Jikokuten
+1E1 Bishamonten
+1E2 Seraph
+1E3 Mara
+1E4 Alilat
+1E5 Demiurge
+1E6 White Rider
+1E7 Red Rider
+1E8 Black Rider
+1E9 Pale Rider
+1EA Trumpeter

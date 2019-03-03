@@ -1,0 +1,421 @@
+000 Dummy
+001 Agi
+002 Agilao
+003 Agidyne
+004 Maragi
+005 Maragion
+006 Maragidyne
+007 Fire Breath
+008 Trisagion
+009 Ragnarok
+00A Bufu
+00B Bufula
+00C Bufudyne
+00D Mabufu
+00E Mabufula
+00F Mabufudyne
+010 Ice Breath
+011 Glacial Blast
+012 Cold World
+013 Zio
+014 Zionga
+015 Ziodyne
+016 Mazio
+017 Mazionga
+018 Maziodyne
+019 Shock
+01A Thunder Reign
+01B Charming Bolt
+01C Garu
+01D Garula
+01E Garudyne
+01F Magaru
+020 Magarula
+021 Magarudyne
+022 Wind Breath
+023 Killing Wind
+024 Floral Gust
+025 Megido
+026 Megidola
+027 Megidolaon
+028 Big Bang
+029 Jihad
+02A Babylon Goblet
+02B Holy Wrath
+02C Judgement
+02D Sea of Chaos
+02E Kamikaze
+02F Last Resort
+030 Life Drain
+031 Mana Drain
+032 Energy Drain
+033 Horn of Fate
+034 Eternal Rest
+035 Mudo
+036 Mudoon
+037 Mamudo
+038 Mamudoon
+039 Die For Me!
+03A Hama
+03B Hamaon
+03C Mahama
+03D Mahamaon
+03E Judgment Light
+03F Dormina
+040 Lullaby
+041 Poisma
+042 Toxic Cloud
+043 Shibaboo
+044 Binding Cry
+045 Marin Karin
+046 Frolic
+047 Stone Curse
+048 Stone Breath
+049 Bobasma
+04A Staredown
+04B Makajama
+04C Tricky Dance
+04D Strainoma
+04E Dry Sea
+04F Bites the Dust
+050 Shuffler
+051 Ancient Curse
+052 Hostile Terror
+053 Strange Ray
+054 Enigmatic Ray
+055 Macca Beam
+056 Wastrel Beam
+057 Crushing Wave
+058 Dummy
+059 Dummy
+05A Dummy
+05B Dummy
+05C Dummy
+05D Dummy
+05E Dummy
+05F Dummy
+060 Dummy
+061 Dummy
+062 Dummy
+063 Dummy
+064 Dummy
+065 Dia
+066 Diarama
+067 Diarahan
+068 Media
+069 Mediarama
+06A Mediarahan
+06B Salvation
+06C Patra
+06D Me Patra
+06E Posumudi
+06F Paraladi
+070 Charmdi
+071 Petradi
+072 Mutudi
+073 Strandi
+074 Bomdi
+075 Amrita
+076 Recarm
+077 Samarecarm
+078 Recarmdra
+079 Tarukaja
+07A Sukukaja
+07B Rakukaja
+07C Luster Candy
+07D Dekaja
+07E Tarunda
+07F Sukunda
+080 Rakunda
+081 Debilitate
+082 Dekunda
+083 Silent Prayer
+084 Unused
+085 War Cry
+086 Fog Breath
+087 Acid Breath
+088 Taunt
+089 Tables Turned
+08A Offered Soul
+08B Tetrakarn
+08C Makarakarn
+08D Tetraja
+08E Charge
+08F Concentrate
+090 Blood Ritual
+091 Lost Word
+092 Sabbatma
+093 Invitation
+094 Dummy
+095 Dummy
+096 Dummy
+097 Lunge
+098 Explosive Fist
+099 Mortal Jihad
+09A Rampage
+09B Megaton Press
+09C Madness Crush
+09D Crescent Slice
+09E True Lobotomy
+09F Berserker God
+0A0 Heat Wave
+0A1 Deathbound
+0A2 Hades Blast
+0A3 Feral Claw
+0A4 Mega Claw
+0A5 Nihil Claw
+0A6 Giant Slice
+0A7 Axel Claw
+0A8 Madness Nails
+0A9 Fang Breaker
+0AA Dream Fist
+0AB Tyranny
+0AC Bomb Knuckle
+0AD Ambush
+0AE Getsu-ei
+0AF Zan-Ei
+0B0 Blight
+0B1 Occult Flash
+0B2 Stun Claw
+0B3 Poison Claw
+0B4 Needle Rush
+0B5 Hell Thrust
+0B6 Grand Tack
+0B7 Riot Gun
+0B8 Needle Assault
+0B9 Arrow Rain
+0BA Heaven's Bow
+0BB Dream Needle
+0BC Toxic Sting
+0BD Peter Piper
+0BE Charm Strike
+0BF Shooting Spree
+0C0 Fleeting Rain
+0C1 Dummy
+0C2 Dummy
+0C3 Dummy
+0C4 Dummy
+0C5 Dummy
+0C6 Dummy
+0C7 Dummy
+0C8 Dummy
+0C9 Fire Shot
+0CA Flame Shot
+0CB Inferno Shot
+0CC Fire Spray
+0CD Flame Spray
+0CE Inferno Spray
+0CF Ice Shot
+0D0 Frost Shot
+0D1 Frigid Shot
+0D2 Ice Spray
+0D3 Frost Spray
+0D4 Frigid Spray
+0D5 Elec Shot
+0D6 Bolt Shot
+0D7 Shock Shot
+0D8 Elec Spray
+0D9 Bolt Spray
+0DA Shock Spray
+0DB Wind Shot
+0DC Gust Shot
+0DD Storm Shot
+0DE Wind Spray
+0DF Gust Spray
+0E0 Storm Spray
+0E1 Riot Gun Copy
+0E2 Freischutz
+0E3 Moan Bullet
+0E4 Snipe
+0E5 Weakshot
+0E6 Grateful One
+0E7 Airstrike
+0E8 Crossfire
+0E9 Desperado
+0EA BC Shot
+0EB Randy Shot
+0EC Shadow Bind
+0ED Rock Bullet
+0EE Say Goodnight
+0EF Heat Shot
+0F0 Headshot
+0F1 Legshot
+0F2 Cripple
+0F3 Armshot
+0F4 Earthlight Ray
+0F5 Moonlight Ray
+0F6 Cat Punch
+0F7 Soul Scanner
+0F8 Ally Call
+0F9 Dummy
+0FA Dummy
+0FB Gehenna
+0FC Horned Rampage
+0FD Waking Dream
+0FE Light of Order
+0FF Binge Eating
+100 Grocery Run
+101 Air Dive
+102 Taking a Bite
+103 Asura Roga
+104 Ashura
+105 Black Flame
+106 Disaster Cycle
+107 Wild Lightning
+108 Disease Wave
+109 Single Shot
+10A Headshot
+10B Airstrike
+10C Mother Earth
+10D Pure Blue
+10E Sunset Melody
+10F Illusory Ritual
+110 Evil Vortex
+111 Ultraviolence
+112 Labyrinth
+113 Axe Chopper
+114 Cleophys Dream
+115 Parting Light
+116 Terror Banquet
+117 Fridge Raid
+118 Air Dive
+119 Taking a Bite
+11A Asura Roga
+11B Ashura
+11C Black Flame
+11D Heaven Strike
+11E Rain Strike
+11F Self-Denial
+120 Untainted Wind
+121 Great Lament
+122 Judgement
+123 Mel Faize
+124 Sinner's Song
+125 Megido Storm
+126 Right Hand
+127 Heaven's Arrow
+128 Requiem
+129 Hellfire
+12A Left Hand
+12B Chaos Tack
+12C Madness Dream
+12D MA
+12E Reason's Start
+12F Great Flood
+130 Mother's Kiss
+131 Mem Aleph
+132 Mem Aleph
+133 Mem Aleph
+134 Wave of Death
+135 Asura Roga
+136 E.N.D. 
+137 Shadow Attack
+138 Adaptation
+139 Agi Gate
+13A Bufu Gate
+13B Zio Gate
+13C Garu Gate
+13D Dark Matter
+13E Shuffler
+13F Fire
+140 Ice
+141 Lightning
+142 Wind
+143 Light
+144 Darkness
+145 Megido Storm
+146 Sinner's Song
+147 Agi Gate
+148 Bufu Gate
+149 Zio Gate
+14A Garu Gate
+14B Mother's Kiss
+14C Jihad
+14D Diarama
+14E Heaven Strike
+14F Mamudoon
+150 Mahamaon
+151 Disaster Cycle
+152 Big Bang
+153 Luster Candy
+154 Iron Judgment
+155 Desperate Hit
+156 Breath
+157 Boss Dummy 93
+158 Boss Dummy 94
+159 Boss Dummy 95
+15A Boss Dummy 96
+15B Boss Dummy 97
+15C Boss Dummy 98
+15D Boss Dummy 99
+15E Boss Dummy 100
+15F Resist Phys
+160 Void Phys
+161 Repel Phys
+162 Drain Phys
+163 Resist Gun
+164 Void Gun
+165 Repel Gun
+166 Drain Gun
+167 Resist Fire
+168 Void Fire
+169 Repel Fire
+16A Drain Fire
+16B Resist Ice
+16C Void Ice
+16D Repel Ice
+16E Drain Ice
+16F Resist Elec
+170 Void Elec
+171 Repel Elec
+172 Drain Elec
+173 Resist Wind
+174 Void Wind
+175 Repel Wind
+176 Drain Wind
+177 Resist Curse
+178 Void Curse
+179 Resist Expel
+17A Void Expel
+17B Void Mind
+17C Void Nerve
+17D Fire Boost
+17E Fire Amp
+17F Ice Boost
+180 Ice Amp
+181 Elec Boost
+182 Elec Amp
+183 Wind Boost
+184 Wind Amp
+185 Endure
+186 Enduring Soul
+187 Counter
+188 Retaliate
+189 Life Aid
+18A Mana Aid
+18B Victory Cry
+18C Spring of Life
+18D Chakra Walk
+18E Watchful
+18F Vigilant
+190 Sleepwalker
+191 Laplace Curse
+192 Preparedness
+193 Gun Amp
+194 Dummy
+195 Auto-Recover
+196 Auto-Suffer
+197 Eternal Sin
+198 Undefeated
+199 Phys Boost
+19A Phys Amp
+19B Gun Boost
+19C Recovery Boost
+19D Recovery Amp
+19E Life Bonus
+19F Life Gain
+1A0 Life Surge
+1A1 Mana Bonus
+1A2 Mana Gain
+1A3 Mana Surge
+1A4 Dummy

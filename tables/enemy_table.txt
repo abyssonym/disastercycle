@@ -49,5 +49,5 @@ mac,2
 zero5,2
 unk_index1,2,list
 unk5,4,list
-sprite,2,list
+sprite,2
 name,20,str

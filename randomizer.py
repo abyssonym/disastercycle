@@ -18,6 +18,49 @@ from sys import argv
 
 VERSION = 1
 KINSHIP_FILENAME = 'kinship.bin'
+AI_PTR_FILENAME = 'enemy_ai_pointers.txt'
+ESKILL_PTR_FILENAME = 'enemy_skill_pointers.txt'
+
+namelibrary = defaultdict(dict)
+for nametype in ['demon', 'skill', 'race']:
+    filename = '%s_names.txt' % nametype
+    with open(path.join(tblpath, filename)) as f:
+        for line in f:
+            line = line.strip()
+            index, name = line.split(' ', 1)
+            index = int(index, 0x10)
+            namelibrary[nametype][index] = name
+
+ai_pointers = {}
+with open(path.join(tblpath, AI_PTR_FILENAME)) as f:
+    for line in f:
+        line = line.strip()
+        pointer, line = line.split()
+        assert line[0] == '#'
+        length, filename = line.lstrip('#').split(',')
+        pointer, length = int(pointer, 0x10), int(length, 0x10)
+        name, extension = filename.split('.')
+        assert extension == 'bf'
+        assert name[:3] == 'ai_'
+        name = name[3:]
+        ai_pointers[name] = (pointer, length)
+
+eskill_pointers = {}
+with open(path.join(tblpath, ESKILL_PTR_FILENAME)) as f:
+    for line in f:
+        line = line.strip()
+        pointer, line = line.split()
+        assert line[0] == '#'
+        filename = line.lstrip('#')
+        pointer = int(pointer, 0x10)
+        name, extension = filename.split('.')
+        assert extension == 'bin'
+        assert name[:3] == 'sk_'
+        name = name[3:]
+        eskill_pointers[name] = pointer
+
+def get_all_object_skills(objs):
+    return sorted(set([s for o in objs for s in o.skills]))
 
 
 class NakamaParent(TableObject):
@@ -29,8 +72,9 @@ class NakamaParent(TableObject):
         assert len(ailments) == 10
         table = self.make_display_table(
             stats, elements, ailments[:5], ailments[5:], rewards)
-        s = '{0:0>3X} {1:0>3X} {2}\n'.format(
-            self.index, self.nakama_index, self.name.strip('\x00'))
+        s = '{0:0>3X} {1:0>3X} {2} {3}\n'.format(
+            self.index, self.nakama_index,
+            self.race_name, self.name.strip('\x00'))
         s += table + '\n'
         return s.strip()
 
@@ -41,6 +85,10 @@ class NakamaParent(TableObject):
     @cached_property
     def nakama(self):
         return NakamaObject.get(self.index)
+
+    @cached_property
+    def enemy(self):
+        return EnemyObject.get(self.index)
 
     @cached_property
     def dsource(self):
@@ -62,7 +110,11 @@ class NakamaParent(TableObject):
         sorted_nakama = sorted(NakamaObject.every,
                                key=lambda n: self.get_kinship(n),
                                reverse=True)
-        if self.is_compendium_demon:
+        sorted_nakama = [n for n in sorted_nakama if n.intershuffle_valid]
+        if self is self.canonical_version:
+            sorted_nakama = [n for n in sorted_nakama
+                             if n is n.canonical_version]
+        elif self.is_compendium_demon:
             sorted_nakama = [n for n in sorted_nakama if n.is_compendium_demon]
         return sorted_nakama
 
@@ -98,11 +150,12 @@ class NakamaParent(TableObject):
             val = self.old_data['res_%s_val' % res]
         else:
             val = getattr(self, 'res_%s_val' % res)
-        val = getattr(self, 'res_%s_val' % res)
         val = val & 0x1FF
         flag = self.get_resistance_flag(res, old=old)
         if flag and flag in 'NRD?':
             val = 0
+        elif flag == 'W' and val == 100:
+            val = 101
         return val
 
     def make_display_table(self, *columns):
@@ -125,7 +178,7 @@ class NakamaParent(TableObject):
         if attr in self.ELEMENTS + self.AILMENTS:
             val = self.get_effective_resistance_value(attr)
             flag = self.get_resistance_flag(attr)
-            return '{0: <3} {1: >3}{2}'.format(attr.upper(), val, flag)
+            return '{0: <3} {1: >3}{2: >1}'.format(attr.upper(), val, flag)
         else:
             assert attr in self.STATS + self.REWARDS
             return '{0: <2} {1: >5}'.format(
@@ -167,6 +220,14 @@ class NakamaParent(TableObject):
             else:
                 weights.append(1.0 / (len(attrs)-1))
 
+        rescode_dict = {
+                'D': 0.0,
+                'R': 0.0,
+                'N': 0.1,
+                'S': 0.45,
+                '':  0.65,
+                'W': 1.0,
+                }
         for reses in [self.ELEMENTS, self.AILMENTS]:
             for res in reses:
                 a = self.get_effective_resistance_value(res, old=True)
@@ -175,11 +236,16 @@ class NakamaParent(TableObject):
                 mydiff = abs(a - b)
                 assert mydiff <= maxdiff
                 features.append(1-(mydiff / maxdiff))
+                weights.append(1.0 / len(reses))
+
                 if reses is self.ELEMENTS:
-                    w = 2.0
-                else:
-                    w = 1.0
-                weights.append(w / len(reses))
+                    a = self.get_resistance_flag(res, old=True)
+                    b = other.get_resistance_flag(res, old=True)
+                    a = rescode_dict[a]
+                    b = rescode_dict[b]
+                    diff = abs(a-b)
+                    features.append(1-diff)
+                    weights.append(1.0 / len(reses))
 
         for i in xrange(16):
             a = self.old_data['inheritance'] & (1 << i)
@@ -263,6 +329,8 @@ class NakamaParent(TableObject):
         f.close()
 
     def get_similar_by_kinship(self):
+        if not self.intershuffle_valid:
+            return self
         candidates = self.kinship_rankings
         index = candidates.index(self)
         index = mutate_normal(index, minimum=0, maximum=len(candidates)-1,
@@ -298,9 +366,70 @@ class NakamaObject(NakamaParent):
         'lu_growth': None, 'ma_growth': None,
         }
 
-    @property
+    @cached_property
     def name(self):
-        return ''
+        return namelibrary['demon'][self.index]
+
+    @cached_property
+    def race_name(self):
+        return namelibrary['race'][self.race]
+
+    @cached_property
+    def intershuffle_valid(self):
+        if (self.name.lower() in ['dummy', 'unknown']
+                or len(set(self.name)) == 1):
+            return False
+        if self.old_data['lv'] != self.enemy.old_data['lv']:
+            return False
+        return True
+
+    @cached_property
+    def is_big_boss(self):
+        return self is self.canonical_version and not self.is_compendium_demon
+
+    @cached_property
+    def sprite(self):
+        return self.enemy.sprite
+
+    @cached_property
+    def companion_group(self):
+        return [n for n in NakamaObject.every if self.name == n.name]
+
+    @cached_property
+    def canonical_version(self):
+        candidates = self.companion_group
+        temp = [c for c in candidates if c.dsource is not None]
+        if temp:
+            candidates = temp
+        temp = [c for c in candidates if c.is_compendium_demon]
+        if temp:
+            candidates = temp
+        return min(candidates, key=lambda n: n.index)
+
+    @cached_property
+    def named_enemy(self):
+        candidates = [e for e in EnemyObject.every if e.sprite == self.sprite
+                      and len(e.name.rstrip('\x00')) >= 2]
+        candidates = sorted(set(candidates))
+        if self.enemy in candidates:
+            return self.enemy
+        elif candidates:
+            return candidates[0]
+        return None
+
+    @cached_property
+    def eskills(self):
+        enemy = self.named_enemy
+        if enemy:
+            return enemy.eskills
+        return None
+
+    def randomize_skills(self):
+        pass
+
+    def randomize(self):
+        self.randomize_skills()
+        super(NakamaObject, self).randomize()
 
     @classmethod
     def full_preclean(cls):
@@ -329,8 +458,53 @@ class NakamaObject(NakamaParent):
                     break
         super(NakamaObject, cls).full_preclean()
 
+    def preclean(self):
+        canon = self.canonical_version
+        if self is canon and not self.is_big_boss:
+            return
+
+        for attr in self.old_data:
+            if attr.startswith('res_'):
+                _, res, _ = attr.split('_')
+                oldval = self.get_effective_resistance_value(res, old=True)
+                canonval = canon.get_effective_resistance_value(res)
+                newval = self.get_effective_resistance_value(res)
+                if (newval > oldval and canonval > oldval and oldval < 50 and
+                        res in ['exp', 'cur', 'sto', 'rag', 'bom', 'sle']):
+                    setattr(self, attr, self.old_data[attr])
+                elif (oldval < canonval and oldval < 50
+                        and res in self.AILMENTS):
+                    setattr(self, attr, self.old_data[attr])
+                elif canonval <= newval or res in [
+                        'phy', 'gun', 'alm', 'fir', 'ice', 'ele', 'win']:
+                    setattr(self, attr, getattr(canon, attr))
+
+                newval = self.get_effective_resistance_value(res)
+                if (self.is_big_boss and oldval < newval
+                        and random.choice([True, False])):
+                    setattr(self, attr, self.old_data[attr])
+            elif attr in self.STATS:
+                old_a, old_b = (self.old_data[attr],
+                                self.canonical_version.old_data[attr])
+                new_b = getattr(self.canonical_version, attr)
+
+                new_a = old_a * (new_b / float(old_b))
+                low, high = self.get_attr_minmax(attr)
+                new_a = int(round(max(low, min(high, new_a))))
+                setattr(self, attr, new_a)
+
+                if (self.is_big_boss and new_a < old_a
+                        and random.choice([True, False])):
+                    setattr(self, attr, old_a)
+            elif (self.old_data[attr] == canon.old_data[attr]):
+                setattr(self, attr, getattr(canon, attr))
+
     def cleanup(self):
         assert hasattr(EnemyObject, 'precleaned') and EnemyObject.precleaned
+        for attr in self.old_data:
+            if attr.startswith('res_') and getattr(self, attr) == 0:
+                setattr(self, attr, 0x400)
+
         if AllyObject.flag not in get_flags():
             for attrs in (self.randomselect_attributes +
                           sorted(self.mutate_attributes)):
@@ -364,6 +538,15 @@ class EnemyObject(NakamaParent):
         'xp': None, 'mac': None,
         }
 
+    @classproperty
+    def after_order(cls):
+        return [NakamaObject]
+
+    @cached_property
+    def eskills(self):
+        name = self.name.rstrip('\x00')
+        return EnemySkillObject.get_by_name(name)
+
     def preclean(self):
         assert not hasattr(NakamaObject, 'cleaned')
         for attrs in NakamaObject.randomselect_attributes + ['hp', 'mp']:
@@ -380,7 +563,6 @@ class EnemyObject(NakamaParent):
                              'mp': 'ma',
                              }[attr]
 
-                # TODO: hp/mp
                 old_a, old_b = (self.old_data[attr],
                                 self.nakama.old_data[nattr])
                 new_b = getattr(self.nakama, nattr)
@@ -389,8 +571,8 @@ class EnemyObject(NakamaParent):
                 elif attr in self.STATS:
                     new_a = old_a * (new_b / float(old_b))
                     low, high = self.get_attr_minmax(attr)
-                    new_a = max(low, min(high, new_a))
-                    setattr(self, attr, int(round(new_a)))
+                    new_a = int(round(max(low, min(high, new_a))))
+                    setattr(self, attr, new_a)
                 elif old_a == old_b and attr == nattr:
                     setattr(self, attr, new_b)
 
@@ -412,11 +594,31 @@ class EnemyObject(NakamaParent):
             for attr in self.STATS:
                 setattr(self, attr, self.old_data[attr])
 
+        for attr in self.old_data:
+            if attr.startswith('res_') and getattr(self, attr) == 0:
+                setattr(self, attr, 0x400)
 
-class EnemySkillObject(TableObject): pass
+        if 'easymodo' in get_activated_codes():
+            for stat in self.STATS:
+                setattr(self, stat, 1)
+            self.mp = 9999
+            self.hp = self.old_data['hp']
+
+
+class EnemySkillObject(TableObject):
+    flag = 's'
+    flag_description = 'demon skills'
+
+    @classmethod
+    def get_by_name(cls, name):
+        if name in eskill_pointers:
+            return EnemySkillObject.get_by_pointer(eskill_pointers[name])
+        return None
 
 
 class DSourceObject(TableObject):
+    flag = 's'
+
     @classmethod
     def get_by_dsource_index(cls, index):
         candidates = [d for d in DSourceObject.every
@@ -443,24 +645,21 @@ if __name__ == '__main__':
                        if isinstance(g, type) and issubclass(g, TableObject)
                        and g not in [TableObject]]
 
-        codes = {}
+        codes = {'easymodo': ['easymodo'],
+                }
 
         run_interface(ALL_OBJECTS, snes=False, codes=codes,
                       custom_degree=True)
 
         #NakamaObject.save_kinship('kinship.bin')
 
-        for n in EnemyObject.every:
-            for stat in n.STATS:
-                setattr(n, stat, 1)
-            n.mp = 9999
-            n.hp = n.old_data['hp']
+        clean_and_write(ALL_OBJECTS)
 
         #for n in NakamaObject.every:
-        #    print n
-        #    print '-' * 79
+        #    if n.intershuffle_valid:
+        #        print n
+        #        print '-' * 79
 
-        clean_and_write(ALL_OBJECTS)
         finish_interface()
 
     except Exception, e:
