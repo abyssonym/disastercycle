@@ -246,6 +246,7 @@ class NakamaParent(TableObject):
         try:
             f = open(path.join(tblpath, filename), 'r+b')
         except IOError:
+            print 'Generating kinship from scratch. This may take some time...'
             return
 
         while True:
@@ -462,6 +463,6 @@ if __name__ == '__main__':
         clean_and_write(ALL_OBJECTS)
         finish_interface()
 
-    except IOError, e:
+    except Exception, e:
         print 'ERROR: %s' % e
         raw_input('Press Enter to close this program. ')
