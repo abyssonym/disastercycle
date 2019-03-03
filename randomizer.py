@@ -269,9 +269,6 @@ class NakamaParent(TableObject):
 
 
 class NakamaObject(NakamaParent):
-    flag = 'n'
-    flag_description = 'nakama (demon allies)'
-
     STATS = ['lv', 'st', 'ma', 'vi', 'ag', 'lu']
     REWARDS = []
     ELEMENTS = ['phy', 'gun', 'fir', 'ice', 'ele', 'win', 'exp', 'cur', 'alm']
@@ -279,10 +276,10 @@ class NakamaObject(NakamaParent):
                 'poi', 'cha', 'mut', 'fea', 'sle']
 
     randomselect_attributes = [
-        'race', 'alignment_ld', 'alignment_lc',
+        'race', 'alignment_ld', 'alignment_lc', 'inheritance',
         ('st', 'st_growth'), ('vi', 'vi_growth'), ('ag', 'ag_growth'),
         ('lu', 'lu_growth'), ('ma', 'ma_growth'),
-        'inheritance', ('hits_misc', 'hits_count'),
+        #('hits_misc', 'hits_count'),
         'attack_element', ('attack_ailment', 'ailment_chance'),
         'res_phy_val', 'res_gun_val', 'res_exp_val', 'res_cur_val',
         'res_fir_val', 'res_ice_val', 'res_ele_val', 'res_win_val',
@@ -300,10 +297,30 @@ class NakamaObject(NakamaParent):
     def name(self):
         return ''
 
+    def cleanup(self):
+        assert hasattr(EnemyObject, 'precleaned') and EnemyObject.precleaned
+        if AllyObject.flag not in get_flags():
+            for attrs in (self.randomselect_attributes +
+                          sorted(self.mutate_attributes)):
+                if isinstance(attrs, basestring):
+                    attrs = [attrs]
+                for attr in attrs:
+                    if attr not in RaceObject.attributes:
+                        setattr(self, attr, self.old_data[attr])
+
+        if RaceObject.flag not in get_flags():
+            for attr in RaceObject.attributes:
+                setattr(self, attr, self.old_data[attr])
+
+
+class AllyObject(TableObject):
+    flag = 'n'
+    flag_description = 'nakama (demon allies)'
+
 
 class EnemyObject(NakamaParent):
     flag = 'e'
-    flag_description = 'enemies'
+    flag_description = 'enemy stats'
 
     STATS = ['lv', 'hp', 'mp', 'st', 'ma', 'vi', 'ag', 'lu']
     REWARDS = ['xp', 'mac']
@@ -311,29 +328,39 @@ class EnemyObject(NakamaParent):
     AILMENTS = ['sto', 'rag', 'par', 'bom', 'str',
                 'poi', 'cha', 'mut', 'fea', 'sle']
 
-    mutate_attributes = {'xp': None,
-                         'mac': None}
+    mutate_attributes = {
+        'xp': None, 'mac': None,
+        }
 
-    @classproperty
-    def after_order(self):
-        return [NakamaObject]
-
-    def cleanup(self):
-        for attrs in NakamaObject.randomselect_attributes:
+    def preclean(self):
+        assert not hasattr(NakamaObject, 'cleaned')
+        for attrs in NakamaObject.randomselect_attributes + ['hp', 'mp']:
             if isinstance(attrs, basestring):
                 attrs = [attrs]
             for attr in attrs:
-                if hasattr(self, attr):
-                    old_a, old_b = (self.old_data[attr],
-                                    self.nakama.old_data[attr])
-                    new_b = getattr(self.nakama, attr)
-                    if old_a == old_b:
-                        setattr(self, attr, new_b)
-                    elif attr.startswith('res_'):
-                        setattr(self, attr, new_b)
-                    elif attr in self.STATS:
-                        new_a = old_a * (new_b / float(old_b))
-                        setattr(self, attr, int(round(new_a)))
+                if not hasattr(self, attr):
+                    continue
+
+                if hasattr(self.nakama, attr):
+                    nattr = attr
+                else:
+                    nattr = {'hp': 'vi',
+                             'mp': 'ma',
+                             }[attr]
+
+                # TODO: hp/mp
+                old_a, old_b = (self.old_data[attr],
+                                self.nakama.old_data[nattr])
+                new_b = getattr(self.nakama, nattr)
+                if attr.startswith('res_'):
+                    setattr(self, attr, new_b)
+                elif attr in self.STATS:
+                    new_a = old_a * (new_b / float(old_b))
+                    low, high = self.get_attr_minmax(attr)
+                    new_a = max(low, min(high, new_a))
+                    setattr(self, attr, int(round(new_a)))
+                elif old_a == old_b and attr == nattr:
+                    setattr(self, attr, new_b)
 
         # nerf early zone enemies
         if self.old_data['lv'] < 10:
@@ -348,6 +375,10 @@ class EnemyObject(NakamaParent):
                     assert old <= balanced <= new
                     setattr(self, attr, int(round(balanced)))
 
+    def cleanup(self):
+        if EnemyObject.flag not in get_flags():
+            for attr in self.STATS:
+                setattr(self, attr, self.old_data[attr])
 
 
 class EnemySkillObject(TableObject): pass
@@ -362,6 +393,12 @@ class DSourceObject(TableObject):
             return None
         assert len(candidates) == 1
         return candidates[0]
+
+
+class RaceObject(TableObject):
+    flag = 'f'
+    flag_description = 'demon races (fusion recipes) and alignments'
+    attributes = ['race', 'alignment_ld', 'alignment_lc']
 
 
 if __name__ == '__main__':
@@ -387,9 +424,9 @@ if __name__ == '__main__':
             n.mp = 9999
             n.hp = n.old_data['hp']
 
-        for n in NakamaObject.every:
-            print n
-            print '-' * 79
+        #for n in NakamaObject.every:
+        #    print n
+        #    print '-' * 79
 
         clean_and_write(ALL_OBJECTS)
         finish_interface()

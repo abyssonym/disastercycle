@@ -1,4 +1,6 @@
+RaceObject              empty.txt               0           1
 NakamaObject            nakama_table.txt        23a9430     491
+AllyObject              empty.txt               0           1
 EnemyObject             enemy_table.txt         23b5410     491
 EnemySkillObject        enemy_skill_table.txt   enemy_skill_pointers.txt
 DSourceObject           dsource_table.txt       26f5050     489
