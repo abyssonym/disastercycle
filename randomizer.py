@@ -393,7 +393,8 @@ class NakamaObject(NakamaParent):
 
     @cached_property
     def companion_group(self):
-        return [n for n in NakamaObject.every if self.name == n.name]
+        return [n for n in NakamaObject.every if self.name == n.name
+                and self.old_data['race'] == n.old_data['race']]
 
     @cached_property
     def canonical_version(self):
