@@ -779,6 +779,11 @@ class EnemyObject(NakamaParent):
                     assert old <= balanced <= new
                     setattr(self, attr, int(round(balanced)))
 
+        if self.index == 0x13c:
+            assert self.nakama.name == 'Slime'
+            for attr in self.old_data:
+                setattr(self, attr, self.old_data[attr])
+
         if (EnemyObject.flag in get_flags()
                 and EnemySkillObject.flag in get_flags()):
             self.update_ai()
