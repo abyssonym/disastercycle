@@ -21,7 +21,7 @@ KINSHIP_FILENAME = 'kinship.bin'
 AI_PTR_FILENAME = 'enemy_ai_pointers.txt'
 ESKILL_PTR_FILENAME = 'enemy_skill_pointers.txt'
 
-namelibrary = defaultdict(dict)
+nameslibrary = defaultdict(dict)
 for nametype in ['demon', 'skill', 'race']:
     filename = '%s_names.txt' % nametype
     with open(path.join(tblpath, filename)) as f:
@@ -29,7 +29,7 @@ for nametype in ['demon', 'skill', 'race']:
             line = line.strip()
             index, name = line.split(' ', 1)
             index = int(index, 0x10)
-            namelibrary[nametype][index] = name
+            nameslibrary[nametype][index] = name
 
 ai_pointers = {}
 with open(path.join(tblpath, AI_PTR_FILENAME)) as f:
@@ -42,8 +42,11 @@ with open(path.join(tblpath, AI_PTR_FILENAME)) as f:
         name, extension = filename.split('.')
         assert extension == 'bf'
         assert name[:3] == 'ai_'
-        name = name[3:]
+        name = name[3:].upper()
+        assert name not in ai_pointers
+        assert pointer not in ai_pointers
         ai_pointers[name] = (pointer, length)
+        ai_pointers[pointer] = name
 
 eskill_pointers = {}
 with open(path.join(tblpath, ESKILL_PTR_FILENAME)) as f:
@@ -56,11 +59,38 @@ with open(path.join(tblpath, ESKILL_PTR_FILENAME)) as f:
         name, extension = filename.split('.')
         assert extension == 'bin'
         assert name[:3] == 'sk_'
-        name = name[3:]
+        name = name[3:].upper()
+        assert name not in eskill_pointers
+        assert pointer not in eskill_pointers
         eskill_pointers[name] = pointer
+        eskill_pointers[pointer] = name
 
-def get_all_object_skills(objs):
-    return sorted(set([s for o in objs for s in o.skills]))
+
+ALLY_TARGET_SKILLS = set(range(0x65, 0x94)) - set(range(0x7E, 0x83))
+ALLY_TARGET_SKILLS |= {0xF8}
+
+def get_similar_skill(skill, candidates):
+    if skill >= 0x15f:
+        # passive skill for some reason??
+        return skill
+    candidates = [c for c in candidates if c < 0x15f]
+
+    if skill > 0xC0 and skill not in ALLY_TARGET_SKILLS and skill != 0x152:
+        raise Exception('Unexpected skill.')
+
+    if skill in ALLY_TARGET_SKILLS:
+        candidates = sorted(set(candidates) & ALLY_TARGET_SKILLS)
+    else:
+        candidates = sorted(set(candidates) - ALLY_TARGET_SKILLS)
+
+    if candidates:
+        chosen = random.choice(candidates)
+        #print nameslibrary['skill'][skill], '->',
+        #print nameslibrary['skill'][chosen]
+        assert 'Dummy' not in nameslibrary['skill'][chosen]
+        return chosen
+    else:
+        return skill
 
 
 class NakamaParent(TableObject):
@@ -75,6 +105,11 @@ class NakamaParent(TableObject):
         s = '{0:0>3X} {1:0>3X} {2} {3}\n'.format(
             self.index, self.nakama_index,
             self.race_name, self.name.strip('\x00'))
+        s += table + '\n'
+        s += 'SKILLS:\n'
+        table = self.make_display_table(self.all_skills_names[0::3],
+                                        self.all_skills_names[1::3],
+                                        self.all_skills_names[2::3])
         s += table + '\n'
         return s.strip()
 
@@ -91,6 +126,10 @@ class NakamaParent(TableObject):
         return EnemyObject.get(self.index)
 
     @cached_property
+    def race_name(self):
+        return nameslibrary['race'][self.nakama.race]
+
+    @cached_property
     def dsource(self):
         return DSourceObject.get_by_dsource_index(
             self.nakama.old_data['dsource_index'])
@@ -100,6 +139,17 @@ class NakamaParent(TableObject):
         if self.dsource is None:
             return []
         return self.dsource.old_data['skills']
+
+    @cached_property
+    def all_skills(self):
+        skills = self.nakama.old_data['skills'] + self.dsource_skills
+        if self.eskills is not None:
+            skills += self.eskills.old_data['skills']
+        return sorted(set([s for s in skills if s]))
+
+    @property
+    def all_skills_names(self):
+        return [nameslibrary['skill'][s] for s in self.all_skills]
 
     @cached_property
     def is_compendium_demon(self):
@@ -160,6 +210,8 @@ class NakamaParent(TableObject):
 
     def make_display_table(self, *columns):
         columns = [c for c in columns if c]
+        if not columns:
+            return ''
         widest = max([len(line) for column in columns for line in column])
         tallest = max([len(column) for column in columns])
 
@@ -368,11 +420,7 @@ class NakamaObject(NakamaParent):
 
     @cached_property
     def name(self):
-        return namelibrary['demon'][self.index]
-
-    @cached_property
-    def race_name(self):
-        return namelibrary['race'][self.race]
+        return nameslibrary['demon'][self.index]
 
     @cached_property
     def intershuffle_valid(self):
@@ -409,14 +457,18 @@ class NakamaObject(NakamaParent):
 
     @cached_property
     def named_enemy(self):
-        candidates = [e for e in EnemyObject.every if e.sprite == self.sprite
-                      and len(e.name.rstrip('\x00')) >= 2]
-        candidates = sorted(set(candidates))
-        if self.enemy in candidates:
-            return self.enemy
-        elif candidates:
+        candidates = [n.enemy for n in self.companion_group if
+                      len(n.enemy.name.rstrip('\x00')) >= 2]
+        if not candidates:
+            return None
+        elif len(candidates) == 1:
             return candidates[0]
-        return None
+        elif self.enemy in candidates:
+            return self.enemy
+        elif self.canonical_version.enemy in candidates:
+            return self.canonical_version.enemy
+        return min(candidates,
+            key=lambda c: (abs(self.old_data['lv']-c.old_data['lv']), c.index))
 
     @cached_property
     def eskills(self):
@@ -425,8 +477,65 @@ class NakamaObject(NakamaParent):
             return enemy.eskills
         return None
 
+    @classproperty
+    def valid_skills(cls):
+        if hasattr(NakamaObject, '_valid_skills'):
+            return NakamaObject._valid_skills
+
+        valid_skills = set([])
+        for n in NakamaObject.every:
+            if n.is_compendium_demon:
+                valid_skills |= set(n.old_data['skills'])
+                valid_skills |= set(n.dsource_skills)
+        valid_skills.remove(0)
+        NakamaObject._valid_skills = valid_skills
+
+        return NakamaObject.valid_skills
+
     def randomize_skills(self):
-        pass
+        old_num = len([s for s in self.old_data['skills'] if s])
+        num_skills = 0
+        while old_num and num_skills <= 0:
+            num_skills = len([s for s in
+                              self.get_similar().old_data['skills'] if s])
+        new_skills = set([])
+        while len(new_skills) < num_skills:
+            chosen = self.get_similar()
+            candidates = [s for s in
+                          chosen.old_data['skills'] + chosen.all_skills if s]
+            if self.is_compendium_demon:
+                candidates = [s for s in candidates
+                              if s in NakamaObject.valid_skills]
+            if candidates:
+                chosen = random.choice(sorted(candidates))
+                new_skills.add(chosen)
+
+        new_skills = sorted(new_skills)
+        self.skills = ([0]*6)
+        self.skills[:len(new_skills)] = new_skills
+
+        if self.dsource is None:
+            return
+
+        old_num = len([s for s in self.dsource_skills if s])
+        num_skills = 0
+        while old_num and num_skills <= 0:
+            num_skills = len([s for s in
+                              self.get_similar().dsource_skills if s])
+        new_dskills = set([])
+        while len(new_dskills) < num_skills:
+            chosen = self.get_similar()
+            candidates = new_skills + [s for s in chosen.all_skills if s]
+            if self.is_compendium_demon:
+                candidates = [s for s in candidates
+                              if s in NakamaObject.valid_skills]
+            if candidates:
+                chosen = random.choice(sorted(candidates))
+                new_dskills.add(chosen)
+
+        new_dskills = sorted(new_dskills)
+        self.dsource.skills = ([0]*3)
+        self.dsource.skills[:len(new_dskills)] = new_dskills
 
     def randomize(self):
         self.randomize_skills()
@@ -459,7 +568,7 @@ class NakamaObject(NakamaParent):
                     break
         super(NakamaObject, cls).full_preclean()
 
-    def preclean(self):
+    def preclean_stats(self):
         canon = self.canonical_version
         if self is canon and not self.is_big_boss:
             return
@@ -500,6 +609,25 @@ class NakamaObject(NakamaParent):
             elif (self.old_data[attr] == canon.old_data[attr]):
                 setattr(self, attr, getattr(canon, attr))
 
+    def preclean_skills(self):
+        canon = self.canonical_version
+        if self is canon:
+            return
+
+        if set(self.old_data['skills']) <= set(canon.old_data['skills'] + [0]):
+            self.skills = list(canon.skills)
+            return
+        elif set(canon.old_data['skills']) == {0}:
+            if any(canon.skills):
+                self.skills = list(canon.skills)
+            return
+
+        raise Exception('Unable to make skills match.')
+
+    def preclean(self):
+        self.preclean_stats()
+        self.preclean_skills()
+
     def cleanup(self):
         assert hasattr(EnemyObject, 'precleaned') and EnemyObject.precleaned
         for attr in self.old_data:
@@ -512,12 +640,17 @@ class NakamaObject(NakamaParent):
                 if isinstance(attrs, basestring):
                     attrs = [attrs]
                 for attr in attrs:
-                    if attr not in RaceObject.attributes:
+                    if attr not in RaceObject.attributes + ['skills']:
                         setattr(self, attr, self.old_data[attr])
 
         if RaceObject.flag not in get_flags():
             for attr in RaceObject.attributes:
                 setattr(self, attr, self.old_data[attr])
+
+        if DSourceObject.flag not in get_flags():
+            self.skills = self.old_data['skills']
+            if self.dsource:
+                self.dsource.skills = self.dsource.old_data['skills']
 
 
 class AllyObject(TableObject):
@@ -547,6 +680,62 @@ class EnemyObject(NakamaParent):
     def eskills(self):
         name = self.name.rstrip('\x00')
         return EnemySkillObject.get_by_name(name)
+
+    def update_ai(self):
+        name = self.name.rstrip('\x00')
+        if len(name) < 2:
+            return
+        ai_pointer, ai_length = ai_pointers[name.upper()]
+        old_skills = set(self.nakama.all_skills)
+        new_skills = set(self.nakama.skills)
+        if self.nakama.canonical_version.dsource is not None:
+            new_skills |= set(self.nakama.canonical_version.dsource.skills)
+        new_skills -= {0}
+
+        ai_skills = set([])
+        offset = 0
+        f = open(get_outfile(), 'r+b')
+        while offset < ai_length:
+            f.seek(ai_pointer + offset)
+            ai_code = read_multi(f, length=2)
+            f.seek(ai_pointer + offset + 2)
+            value = read_multi(f, length=2)
+            if ai_code == 0x1d and value and value in new_skills:
+                ai_skills.add(value)
+            elif (ai_code == 0x1d and value
+                    and value in old_skills and value not in new_skills):
+                new_value = get_similar_skill(value, new_skills)
+                ai_skills.add(new_value)
+                f.seek(ai_pointer + offset + 2)
+                write_multi(f, new_value, length=2)
+            offset += 4
+        f.close()
+
+        if self.nakama.canonical_version.dsource is not None:
+            dsource_skills = self.nakama.canonical_version.dsource.skills
+        else:
+            dsource_skills = []
+        eskill_candidates = []
+        eskill_leftovers = []
+        for skills in [(ai_skills & new_skills) - old_skills,
+                       self.nakama.skills, dsource_skills]:
+            skills = sorted(set(skills))
+            leftovers = [s for s in skills if s >= 0x15f]
+            skills = [s for s in skills if s not in leftovers]
+            random.shuffle(skills)
+            for s in skills:
+                if s not in eskill_candidates:
+                    eskill_candidates.append(s)
+            random.shuffle(leftovers)
+            for s in leftovers:
+                if s not in eskill_leftovers:
+                    eskill_leftovers.append(s)
+        eskill_candidates += leftovers
+        eskill_candidates = sorted(eskill_candidates[:6])
+        while len(eskill_candidates) < 8:
+            eskill_candidates.append(0)
+        assert self.eskills is not None
+        self.eskills.skills = eskill_candidates
 
     def preclean(self):
         assert not hasattr(NakamaObject, 'cleaned')
@@ -590,6 +779,10 @@ class EnemyObject(NakamaParent):
                     assert old <= balanced <= new
                     setattr(self, attr, int(round(balanced)))
 
+        if (EnemyObject.flag in get_flags()
+                and EnemySkillObject.flag in get_flags()):
+            self.update_ai()
+
     def cleanup(self):
         if EnemyObject.flag not in get_flags():
             for attr in self.STATS:
@@ -610,11 +803,32 @@ class EnemySkillObject(TableObject):
     flag = 's'
     flag_description = 'demon skills'
 
+    def __repr__(self):
+        s = '{0:0>3X} {1}\n'.format(self.index, self.name)
+        for sk in self.skills:
+            if sk:
+                s += '{0}\n'.format(nameslibrary['skill'][sk])
+        return s.strip()
+
+    @cached_property
+    def name(self):
+        return eskill_pointers[self.pointer]
+
+    @cached_property
+    def enemy(self):
+        candidates = [e for e in EnemyObject.every if e.eskill is self]
+        assert len(candidates) == 1
+        return candidates[0]
+
     @classmethod
     def get_by_name(cls, name):
         if name in eskill_pointers:
-            return EnemySkillObject.get_by_pointer(eskill_pointers[name])
+            return EnemySkillObject.get_by_pointer(
+                eskill_pointers[name.upper()])
         return None
+
+    def cleanup(self):
+        self.num_skills = len([s for s in self.skills if s])
 
 
 class DSourceObject(TableObject):
@@ -656,7 +870,10 @@ if __name__ == '__main__':
 
         clean_and_write(ALL_OBJECTS)
 
-        #for n in NakamaObject.every:
+        pixie = NakamaObject.get(0x92)
+        nakamas = pixie.kinship_rankings
+
+        #for n in nakamas:
         #    if n.intershuffle_valid:
         #        print n
         #        print '-' * 79
