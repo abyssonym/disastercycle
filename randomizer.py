@@ -863,8 +863,9 @@ class RaceObject(TableObject):
 
 if __name__ == '__main__':
     try:
-        print ('You are using the Shin Megami Tensei: Strange Journey '
-               'randomizer version %s.' % VERSION)
+        print ('SMT: Strange Journey DISASTER CYCLE '
+               'compendium randomizer V%s' % VERSION)
+        print '-' * 79
         print
 
         ALL_OBJECTS = [g for g in globals().values()
