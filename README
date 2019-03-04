@@ -1,0 +1,21 @@
+Shin Megami Tensei: Strange Journey DISASTER CYCLE Compendium Randomizer
+Version:    1
+Date:       March 04, 2019
+URL:        https://www.abyssonym.com/
+            https://www.github.com/abyssonym
+Contact:    https://twitter.com/abyssonym
+
+--- HOW TO USE ---
+    Running the randomizer:
+        Windows users may use the executable file, "sj_disastercycle.exe". Other users, please run "randomizer.py" using Python version 2.7.
+
+    Compatible with the following roms for NDS:
+        SMT SJ NA       47cfc1ef624ea3a43f1aa0a49d551d1a
+
+    This randomizer has the following flags:
+        e  Randomize enemy stats.
+        f  Randomize demon races (fusion recipes) and alignments.
+        n  Randomize nakama (demon allies).
+        s  Randomize demon skills.
+
+    Additionally, the level of randomness can be adjusted to your preference. A value of 0 changes virtually nothing, a value of 1 is extremely unbalanced (i.e., final boss stats in Antlia), and 0.5 is the recommended, default setting.
