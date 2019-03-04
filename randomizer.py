@@ -798,6 +798,12 @@ class EnemyObject(NakamaParent):
             self.mp = 9999
             self.hp = self.old_data['hp']
 
+        if self.index == 0x1a2:
+            assert self.nakama.name == 'Gore'
+            for stat in self.STATS:
+                setattr(self, stat, 99)
+            self.hp = 9999
+
 
 class EnemySkillObject(TableObject):
     flag = 's'
